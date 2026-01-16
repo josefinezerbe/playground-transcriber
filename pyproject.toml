@@ -1,0 +1,22 @@
+[project]
+name = "transcriber"
+version = "0.1.0"
+description = "Minimal video/audio-to-text with whisper"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+  {name = "Josefine Zerbe", email = "jzerbe@cbs.mpg.de"}
+]
+dependencies = ["openai-whisper>=20231117"]
+
+# Optional faster backend: pip install '.[faster]'
+[project.optional-dependencies]
+faster = ["faster-whisper>=1.0.0"]
+
+[project.scripts]
+vid2txt = "transcriber.cli:main"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,41 @@
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+env/
+venv/
+transcriber-env/
+
+# OS/IDEs
+.DS_Store
+.vscode/
+.idea/
+
+# inputs
+media/
+
+# outputs
+*.txt
+!requirements.txt
+!requirements-*.txt
+output/
+out/
+outputs/
+out_dir/
+workdir/
+work_dir/
+work/
+
+# video files
+*.mp3
+*.wav
+*.m4a
+*.mp4
+*.mov
+*.mkv
+
+# images
+*.jpg
+*.jpeg
+*.png
