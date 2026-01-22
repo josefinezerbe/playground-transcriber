@@ -12,16 +12,17 @@ transcriber-env/
 .vscode/
 .idea/
 
-# inputs
-media/
+# inputs & outputs
+media/*
+!media/.gitkeep
+outputs/*
+!outputs/.gitkeep
 
-# outputs
 *.txt
 !requirements.txt
 !requirements-*.txt
 output/
 out/
-outputs/
 out_dir/
 workdir/
 work_dir/

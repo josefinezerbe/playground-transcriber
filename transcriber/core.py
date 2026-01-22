@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 class TranscribeError(Exception):
     pass
@@ -60,3 +60,44 @@ def transcribe(
         raise TranscribeError("openai-whisper not installed. Try: pip install openai-whisper") from e
     except Exception as e:
         raise TranscribeError(f"Transcription failed (whisper): {e}") from e
+
+def transcribe_diarized(
+    input_path: str,
+    model: str = "small",
+    language: Optional[str] = None,
+    device: Optional[str] = None,
+    hf_token: Optional[str] = None,
+) -> str:
+    """
+    Return a transcript with speaker labels using WhisperX + pyannote diarization.
+    Requires: pip install '.[diarize]' and a Hugging Face token with access to pyannote models.
+    """
+    dev = _auto_device(device)
+    try:
+        import whisperx
+    except ImportError as e:
+        raise TranscribeError("Missing dependency. Install: pip install '.[diarize]'") from e
+
+    try:
+        # 1) ASR
+        asr_model = whisperx.load_model(model, device=dev)
+        audio = whisperx.load_audio(input_path)
+        asr_result = asr_model.transcribe(audio, language=language)
+
+        # 2) Diarization (needs HF token for pyannote)
+        diar = whisperx.DiarizationPipeline(use_auth_token=hf_token, device=dev)
+        diar_segments = diar(audio)
+
+        # 3) Assign speakers to words/segments
+        aligned = whisperx.assign_word_speakers(diar_segments, asr_result)
+
+        # 4) Format: "Speaker X: text"
+        lines: List[str] = []
+        for seg in aligned.get("segments", []):
+            spk = seg.get("speaker") or "Speaker"
+            text = (seg.get("text") or "").strip()
+            if text:
+                lines.append(f"{spk}: {text}")
+        return "\n".join(lines).strip()
+    except Exception as e:
+        raise TranscribeError(f"Diarized transcription failed: {e}") from e
